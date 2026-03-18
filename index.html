@@ -1,11 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SkyMist — Weather Forecast</title>
-</head>
-<body>
-    
-</body>
+    <link rel="stylesheet" href="src/output.css" />
+    <style>
+      /* Fix Tailwind v4's broken .inset-0 utility */
+      .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    </style>
+  </head>
+  <body>
+
+    <!------------ Animated Background ---------->
+    <div style="position:fixed; top:0; right:0; bottom:0; left:0; z-index:0; pointer-events:none; overflow:hidden;">
+      <div class="bg-gradient" id="bgGradient"></div>
+      <div class="sky-glow"    id="skyGlow"></div>
+      <div class="sun-orb"     id="sunOrb"></div>
+      <div class="moon-orb"    id="moonOrb"></div>
+      <div style="position:absolute; top:0; right:0; bottom:0; left:0; overflow:hidden;" id="cloudsWrap">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+      </div>
+      <div class="rain-wrap"     id="rainWrap"></div>
+      <div class="snow-wrap"     id="snowWrap"></div>
+      <div class="stars-wrap"    id="starsWrap"></div>
+      <div class="lightning-wrap" id="lightningWrap"></div>
+    </div>
+
+    <!-- App content -->
+    <div style="position:relative; z-index:10; color:white; padding:2rem;">
+      <h1 style="font-size:2.5rem; font-weight:800;">SkyMist</h1>
+      <p style="margin-top:0.5rem; opacity:0.6;">Weather Forecast</p>
+    </div>
+
+    <script src="src/app.js"></script>
+  </body>
 </html>
