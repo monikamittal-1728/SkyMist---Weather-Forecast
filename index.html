@@ -4,37 +4,206 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SkyMist — Weather Forecast</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Pacifico&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap&family=Roboto+Slab:wght@100..900&display=swap&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
     <link rel="stylesheet" href="src/output.css" />
     <style>
       /* Fix Tailwind v4's broken .inset-0 utility */
-      .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+      .inset-0 {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
     </style>
   </head>
   <body>
-
     <!------------ Animated Background ---------->
-    <div style="position:fixed; top:0; right:0; bottom:0; left:0; z-index:0; pointer-events:none; overflow:hidden;">
+    <div
+      style="
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+      "
+    >
       <div class="bg-gradient" id="bgGradient"></div>
       <canvas id="waveCanvas"></canvas>
-      <div class="sky-glow"    id="skyGlow"></div>
-      <div class="sun-orb"     id="sunOrb"></div>
-      <div class="moon-orb"    id="moonOrb"></div>
-      <div style="position:absolute; top:0; right:0; bottom:0; left:0; overflow:hidden;" id="cloudsWrap">
+      <div class="sky-glow" id="skyGlow"></div>
+      <div class="sun-orb" id="sunOrb"></div>
+      <div class="moon-orb" id="moonOrb"></div>
+      <div
+        style="
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          overflow: hidden;
+        "
+        id="cloudsWrap"
+      >
         <div class="cloud cloud-1"></div>
         <div class="cloud cloud-2"></div>
         <div class="cloud cloud-3"></div>
       </div>
-      <div class="rain-wrap"     id="rainWrap"></div>
-      <div class="snow-wrap"     id="snowWrap"></div>
-      <div class="stars-wrap"    id="starsWrap"></div>
+      <div class="rain-wrap" id="rainWrap"></div>
+      <div class="snow-wrap" id="snowWrap"></div>
+      <div class="stars-wrap" id="starsWrap"></div>
       <div class="lightning-wrap" id="lightningWrap"></div>
     </div>
 
+    <!-- ═══════════ APP SHELL ═══════════ -->
+    <div class="relative z-10 min-h-screen flex flex-col text-white">
+      <!-- ════════ NAVBAR ════════
+           Mobile  : Row1 = [Brand] [Controls]
+                     Row2 = [──── Search ────]
+           Tablet+ : [Brand] [─── Search ───] [Controls]
+      ═══════════════════════════════════════ -->
+      <header class="nav-shell sticky top-0 z-50">
+        <!-- BRAND -->
+        <div class="nav-brand font-roboto">
+          <em class="nav-brand-accent">Sky</em>Mist
+        </div>
 
-    <!-- App content -->
-    <div style="position:relative; z-index:10; color:white; padding:2rem;">
-      <h1 style="font-size:2.5rem; font-weight:800;">SkyMist</h1>
-      <p style="margin-top:0.5rem; opacity:0.6;">Weather Forecast</p>
+        <!-- SEARCH -->
+        <div class="nav-search-block">
+          <div class="nav-search-wrap">
+            <div class="search-ico">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <input
+              class="search-input font-outfit"
+              id="inp"
+              type="text"
+              placeholder="Search city…"
+              autocomplete="off"
+            />
+            <button class="search-btn" onclick="doSearch()">Search</button>
+          </div>
+          <div id="rdrop" class="rdrop hidden"></div>
+        </div>
+
+        <!-- CONTROLS -->
+        <div class="nav-controls">
+          <button class="round-btn" onclick="doGeo()" title="Use my location">
+            <i class="fa-solid fa-crosshairs"></i>
+          </button>
+           <button class="round-btn" onclick="setUnit()" title="Temp Toggle">
+            °C
+          </button>
+          <!-- <div class="nav-unit-toggle">
+            <button id="bc" class="ub on" onclick="setUnit('C')">°C</button>
+            <button id="bf" class="ub" onclick="setUnit('F')">°F</button>
+          </div> -->
+        </div>
+      </header>
+      <!-- ════════ END NAVBAR ════════ -->
+
+      <!-- ════════ MAIN ════════ -->
+      <main class="flex-1 px-4 py-6 max-w-5xl mx-auto w-full">
+        <!-- Alert -->
+        <div id="alertBanner" class="alert-banner hidden">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span id="alertText"></span>
+        </div>
+
+        <!-- Welcome -->
+        <div id="welcomeState" class="state-card">
+          <div class="state-icon">🌤</div>
+          <h2 class="state-title font-playfair">What's the weather like?</h2>
+          <p class="state-sub font-outfit">
+            Search a city above or use your current location
+          </p>
+        </div>
+
+        <!-- Loading -->
+        <div id="loadingState" class="state-card hidden">
+          <div class="loader"></div>
+          <p class="state-sub font-outfit" style="margin-top: 1rem">
+            Reading the skies…
+          </p>
+        </div>
+
+        <!-- Error -->
+        <div id="errorState" class="state-card hidden">
+          <div class="state-icon">⚠️</div>
+          <h2 class="state-title font-playfair" id="errorTitle">
+            Something went wrong
+          </h2>
+          <p class="state-sub font-outfit" id="errorMsg">Please try again.</p>
+        </div>
+
+        <!-- Weather Content -->
+        <div id="weatherContent" class="hidden">
+          <!-- Current Weather -->
+          <div class="w-card mb-4">
+            <div class="w-card-top">
+              <div>
+                <div class="w-city font-playfair" id="wCity">—</div>
+                <div class="w-date font-outfit" id="wDate">—</div>
+                <div class="w-temp-row">
+                  <span class="w-temp font-roboto" id="wTemp">—</span>
+                  <span class="w-emoji" id="wEmoji">🌤</span>
+                </div>
+                <div class="w-desc font-outfit" id="wDesc">—</div>
+              </div>
+              <div class="w-stats-grid">
+                <div class="w-stat">
+                  <i class="fa-solid fa-droplet w-stat-ico"></i>
+                  <span class="w-stat-label">Humidity</span>
+                  <span class="w-stat-val" id="wHum">—</span>
+                </div>
+                <div class="w-stat">
+                  <i class="fa-solid fa-wind w-stat-ico"></i>
+                  <span class="w-stat-label">Wind</span>
+                  <span class="w-stat-val" id="wWind">—</span>
+                </div>
+                <div class="w-stat">
+                  <i class="fa-solid fa-eye w-stat-ico"></i>
+                  <span class="w-stat-label">Visibility</span>
+                  <span class="w-stat-val" id="wVis">—</span>
+                </div>
+                <div class="w-stat">
+                  <i class="fa-solid fa-temperature-half w-stat-ico"></i>
+                  <span class="w-stat-label">Feels Like</span>
+                  <span class="w-stat-val" id="wFeels">—</span>
+                </div>
+                <div class="w-stat">
+                  <i class="fa-solid fa-gauge w-stat-ico"></i>
+                  <span class="w-stat-label">Pressure</span>
+                  <span class="w-stat-val" id="wPres">—</span>
+                </div>
+                <div class="w-stat">
+                  <i class="fa-solid fa-sun w-stat-ico"></i>
+                  <span class="w-stat-label">Sunrise</span>
+                  <span class="w-stat-val" id="wSun">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5-Day Forecast -->
+          <div class="w-card">
+            <h3 class="forecast-title font-outfit">
+              <i class="fa-solid fa-calendar-days"></i> 5-Day Forecast
+            </h3>
+            <div class="forecast-grid" id="forecastGrid"></div>
+          </div>
+        </div>
+        <!-- /weatherContent -->
+      </main>
+      <!-- ════════ END MAIN ════════ -->
     </div>
 
     <script src="src/app.js"></script>
