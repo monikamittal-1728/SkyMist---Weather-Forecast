@@ -165,15 +165,14 @@
   .inset-0 {
     inset: calc(var(--spacing) * 0);
   }
-  .end {
-    inset-inline-end: var(--spacing);
+  .start {
+    inset-inline-start: var(--spacing);
   }
-  .hidden {
-    display: none;
+  .block {
+    display: block;
   }
-  .blur {
-    --tw-blur: blur(8px);
-    filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+  .resize {
+    resize: both;
   }
   .filter {
     filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
@@ -203,10 +202,10 @@
 }
 @keyframes moonGlow {
   0%, 100% {
-    box-shadow: 0 0 40px rgba(240,232,180,0.25), inset -8px -4px 0 rgba(0,0,0,0.15);
+    box-shadow: 0 0 40px rgba(240, 232, 180, 0.25), inset -8px -4px 0 rgba(0, 0, 0, 0.15);
   }
   50% {
-    box-shadow: 0 0 70px rgba(240,232,180,0.42), inset -8px -4px 0 rgba(0,0,0,0.15);
+    box-shadow: 0 0 70px rgba(240, 232, 180, 0.42), inset -8px -4px 0 rgba(0, 0, 0, 0.15);
   }
 }
 @keyframes cloudDrift {
@@ -280,7 +279,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background: linear-gradient(180deg, #5ab3e8 0%, #3a8fc8 25%, #1e6aaa 65%, #0d3e7a 100%);
+    background: linear-gradient( 180deg, #5ab3e8 0%, #3a8fc8 25%, #1e6aaa 65%, #0d3e7a 100% );
     transition: background 1.4s ease;
   }
   .sky-glow {
@@ -289,7 +288,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background: radial-gradient(ellipse 85% 45% at 50% 0%, rgba(255,255,255,0.22) 0%, transparent 65%);
+    background: radial-gradient( ellipse 85% 45% at 50% 0%, rgba(255, 255, 255, 0.22) 0%, transparent 65% );
     transition: opacity 1.2s ease;
   }
   .sun-orb {
@@ -300,7 +299,7 @@
     right: 12%;
     width: 220px;
     height: 220px;
-    background: radial-gradient(circle, rgba(255,248,180,0.95) 0%, rgba(255,220,80,0.70) 35%, rgba(255,180,40,0.25) 65%, transparent 80%);
+    background: radial-gradient( circle, rgba(255, 248, 180, 0.95) 0%, rgba(255, 220, 80, 0.7) 35%, rgba(255, 180, 40, 0.25) 65%, transparent 80% );
     filter: blur(20px);
     transition: opacity 1.4s ease;
     animation: sunPulse 6s ease-in-out infinite;
@@ -314,7 +313,7 @@
     width: 80px;
     height: 80px;
     background: radial-gradient(circle at 35% 38%, #f0e8c8, #c8b070);
-    box-shadow: 0 0 40px rgba(240,232,180,0.25), inset -8px -4px 0 rgba(0,0,0,0.15);
+    box-shadow: 0 0 40px rgba(240, 232, 180, 0.25), inset -8px -4px 0 rgba(0, 0, 0, 0.15);
     transition: opacity 1.4s ease;
     animation: moonGlow 6s ease-in-out infinite;
   }
@@ -322,7 +321,7 @@
     position: absolute;
     opacity: 0;
     border-radius: 60px;
-    background: rgba(255,255,255,0.13);
+    background: rgba(255, 255, 255, 0.13);
     filter: blur(24px);
     transition: opacity 1.4s ease, filter 1.4s ease;
     animation: cloudDrift linear infinite alternate;
@@ -363,7 +362,7 @@
   .raindrop {
     position: absolute;
     width: 1.5px;
-    background: linear-gradient(transparent, rgba(180,220,255,0.7));
+    background: linear-gradient(transparent, rgba(180, 220, 255, 0.7));
     border-radius: 2px;
     animation: rainFall linear infinite;
   }
@@ -381,7 +380,7 @@
     position: absolute;
     user-select: none;
     -webkit-user-select: none;
-    color: rgba(255,255,255,0.85) !important;
+    color: rgba(255, 255, 255, 0.85) !important;
     animation: snowFall linear infinite;
   }
   .stars-wrap {
@@ -407,8 +406,24 @@
     bottom: 0;
     left: 0;
     opacity: 0;
-    background: rgba(200,220,255,0.65);
+    background: rgba(200, 220, 255, 0.65);
   }
+}
+#waveCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+#sunCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
 }
 @property --tw-blur {
   syntax: "*";
