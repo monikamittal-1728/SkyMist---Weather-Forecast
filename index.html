@@ -24,6 +24,25 @@
     </style>
   </head>
   <body>
+    <!-- Toast  -->
+    <div
+      id="toast"
+      class="hidden fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 bg-[#1a1a2e] text-white rounded-2xl px-5 py-4 max-w-[300px] w-[90vw] sm:w-auto border border-red-500/40 shadow-2xl flex flex-col gap-1"
+    >
+      <!-- Close button -->
+      <span
+        onclick="closeToast()"
+        class="absolute top-3 right-4 cursor-pointer opacity-50 hover:opacity-100 transition-opacity text-sm"
+        >✕</span
+      >
+
+      <!-- Title -->
+      <div class="font-playfair font-bold text-red-400 text-sm pr-4">Oops!</div>
+
+      <!-- Message -->
+      <div id="toastMsg" class="text-white/70 text-sm"></div>
+    </div>
+
     <!------------ Animated Background ---------->
     <div
       style="
@@ -65,11 +84,6 @@
 
     <!-- ═══════════ APP SHELL ═══════════ -->
     <div class="relative z-10 min-h-screen flex flex-col text-white">
-      <!-- ════════ NAVBAR ════════
-           Mobile  : Row1 = [Brand] [Controls]
-                     Row2 = [──── Search ────]
-           Tablet+ : [Brand] [─── Search ───] [Controls]
-      ═══════════════════════════════════════ -->
       <header class="nav-shell sticky top-0 z-50">
         <!-- BRAND -->
         <div class="nav-brand font-roboto">
@@ -99,7 +113,7 @@
           <button class="round-btn" onclick="doGeo()" title="Use my location">
             <i class="fa-solid fa-crosshairs"></i>
           </button>
-           <button class="round-btn" onclick="setUnit()" title="Temp Toggle">
+          <button class="round-btn" onclick="setUnit()" title="Temp Toggle">
             °C
           </button>
           <!-- <div class="nav-unit-toggle">
@@ -111,99 +125,136 @@
       <!-- ════════ END NAVBAR ════════ -->
 
       <!-- ════════ MAIN ════════ -->
-      <main class="flex-1 px-4 py-6 max-w-5xl mx-auto w-full">
-        <!-- Alert -->
-        <div id="alertBanner" class="alert-banner hidden">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-          <span id="alertText"></span>
-        </div>
-
-        <!-- Welcome -->
-        <div id="welcomeState" class="state-card">
-          <div class="state-icon">🌤</div>
-          <h2 class="state-title font-playfair">What's the weather like?</h2>
-          <p class="state-sub font-outfit">
-            Search a city above or use your current location
-          </p>
-        </div>
-
-        <!-- Loading -->
-        <div id="loadingState" class="state-card hidden">
-          <div class="loader"></div>
-          <p class="state-sub font-outfit" style="margin-top: 1rem">
-            Reading the skies…
-          </p>
-        </div>
-
-        <!-- Error -->
-        <div id="errorState" class="state-card hidden">
-          <div class="state-icon">⚠️</div>
-          <h2 class="state-title font-playfair" id="errorTitle">
-            Something went wrong
-          </h2>
-          <p class="state-sub font-outfit" id="errorMsg">Please try again.</p>
-        </div>
-
-        <!-- Weather Content -->
-        <div id="weatherContent" class="hidden">
-          <!-- Current Weather -->
-          <div class="w-card mb-4">
-            <div class="w-card-top">
-              <div>
-                <div class="w-city font-playfair" id="wCity">—</div>
-                <div class="w-date font-outfit" id="wDate">—</div>
-                <div class="w-temp-row">
-                  <span class="w-temp font-roboto" id="wTemp">—</span>
-                  <span class="w-emoji" id="wEmoji">🌤</span>
-                </div>
-                <div class="w-desc font-outfit" id="wDesc">—</div>
+      <main class="flex-1 px-4 py-6 max-w-7xl mx-auto w-full">
+        <!-- current weather section -->
+        <div class="flex justify-between mt-10">
+          <!-- left side current weather -->
+          <div class="flex flex-col">
+            <div class="flex flex-col items-start justify-center gap-2">
+              <span
+                class="font-playfair text-[var(--text)] text-2xl lg:text-4xl"
+                id="city"
+              >
+                New York
+              </span>
+              <span
+                id="country"
+                class="font-roboto text-base rounded-2xl border border-white bg-mauve-500/30 px-3 lg:text-sm text-[var(--muted)] font-bold"
+              >
+                US
+              </span>
+              <div
+                id="liveDate"
+                class="mt-0.5 tracking-[2px] uppercasetransition-colors duration-700 text-[var(--text1)] text-[10px] md:text-xs"
+              >
+                14 march, 2026
               </div>
-              <div class="w-stats-grid">
-                <div class="w-stat">
-                  <i class="fa-solid fa-droplet w-stat-ico"></i>
-                  <span class="w-stat-label">Humidity</span>
-                  <span class="w-stat-val" id="wHum">—</span>
-                </div>
-                <div class="w-stat">
-                  <i class="fa-solid fa-wind w-stat-ico"></i>
-                  <span class="w-stat-label">Wind</span>
-                  <span class="w-stat-val" id="wWind">—</span>
-                </div>
-                <div class="w-stat">
-                  <i class="fa-solid fa-eye w-stat-ico"></i>
-                  <span class="w-stat-label">Visibility</span>
-                  <span class="w-stat-val" id="wVis">—</span>
-                </div>
-                <div class="w-stat">
-                  <i class="fa-solid fa-temperature-half w-stat-ico"></i>
-                  <span class="w-stat-label">Feels Like</span>
-                  <span class="w-stat-val" id="wFeels">—</span>
-                </div>
-                <div class="w-stat">
-                  <i class="fa-solid fa-gauge w-stat-ico"></i>
-                  <span class="w-stat-label">Pressure</span>
-                  <span class="w-stat-val" id="wPres">—</span>
-                </div>
-                <div class="w-stat">
-                  <i class="fa-solid fa-sun w-stat-ico"></i>
-                  <span class="w-stat-label">Sunrise</span>
-                  <span class="w-stat-val" id="wSun">—</span>
-                </div>
+            </div>
+            <div class="flex gap-3 my-5 justify-baseline">
+              <div
+                class="font-roboto font-extrabold text-[var(--text)] text-7xl sm:text-8xl transition-colors duration-700"
+                id="tempDisplay"
+              >
+                97°
+              </div>
+              <div class="flex flex-col  p-2 justify-end">
+                <div class="text-white/90">H:97° L:97°</div>
+                <div class="text-white/65" id="wF">Feels like 97°</div>
               </div>
             </div>
           </div>
 
-          <!-- 5-Day Forecast -->
-          <div class="w-card">
-            <h3 class="forecast-title font-outfit">
-              <i class="fa-solid fa-calendar-days"></i> 5-Day Forecast
-            </h3>
-            <div class="forecast-grid" id="forecastGrid"></div>
+          <!-- right side current weather -->
+          <div class="flex flex-col items-end">
+            <div class="flex gap-1 flex-col justify-center items-end">
+              <div class="text-5xl" id="condIcon">☀️</div>
+              <div
+                class="font-playfair text-3xl text-[var(--ac)] transition-colors duration-700"
+                id="condName"
+              >
+                Sunny
+              </div>
+            </div>
+            <!-- Weather stats row -->
+            <div class="flex gap-3 items-center md:justify-end flex-wrap mt-20">
+              <div class="weather-stat">
+                <span class="text-white/80"
+                  ><i class="fa-brands fa-drupal"></i
+                ></span>
+                <span class="text-white/80">Humidity</span>
+                <span id="wH">6%</span>
+              </div>
+              <div class="weather-stat">
+                <span class="text-white/80"
+                  ><i class="fa-solid fa-wind"></i
+                ></span>
+                <span class="text-white/80">Wind</span>
+                <span id="wW">4.55 m/s </span>
+              </div>
+              <div class="weather-stat">
+                <span class="text-white/80"
+                  ><i class="fa-solid fa-temperature-half"></i
+                ></span>
+                <span class="text-white/80">Feels like</span>
+                <span id="wF">34°C</span>
+              </div>
+              <div class="weather-stat">
+                <span class="text-white/80"
+                  ><i class="fa-regular fa-eye"></i>
+                </span>
+                <span class="text-white/80"> Visibility</span>
+                <span id="wV">10.0 km</span>
+              </div>
+              <div class="weather-stat">
+                <span class="text-white/80"
+                  ><i class="fa-solid fa-bolt"></i>
+                </span>
+                <span class="text-white/80"> Pressure</span>
+                <span id="wP">101 hPa</span>
+              </div>
+            </div>
           </div>
         </div>
-        <!-- /weatherContent -->
+        <!-- ══════════════════════════════════
+         hourly section
+      ══════════════════════════════════ -->
+        <div class="mt-10">
+          <div class="text-[var(--text1)] mb-5 font-roboto font-bold">
+            <i class="fa-solid fa-clock"></i> Hourly Forecast
+          </div>
+          <div id="hourly-scroll"></div>
+        </div>
+
+        <!-- ══════════════════════════════════
+           5 - DAY WEATHER SECTION
+      ══════════════════════════════════ -->
+        <div class="mt-10 flex flex-col">
+          <div class="text-[var(--text1)] mb-5 font-roboto font-bold pb-5">
+            5 - DAY FORECAST
+          </div>
+          <div class="fc-grid" id="fcGrid"></div>
+        </div>
       </main>
       <!-- ════════ END MAIN ════════ -->
+
+      <!-- ══════════════════════════════════
+         LOADER 
+    ══════════════════════════════════ -->
+      <div
+        id="loader"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/20"
+      >
+        <div class="flex flex-col items-center gap-3">
+          <div
+            class="w-12 h-12 rounded-full border-4 border-[var(--card-border)] border-t-[var(--accent)] animate-spin"
+          ></div>
+          <p
+            class="text-[var(--text)] font-outfit text-sm tracking-widest uppercase transition-colors duration-700"
+          >
+            Fetching sky data…
+          </p>
+        </div>
+      </div>
     </div>
 
     <script src="src/app.js"></script>

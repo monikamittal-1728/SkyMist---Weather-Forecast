@@ -1,0 +1,7 @@
+{
+     "liveServer.settings.port": 5501,
+  "tailwindCSS.experimental.configFile": "./src/input.css",
+  "editor.quickSuggestions": {
+    "strings": true
+  }
+}

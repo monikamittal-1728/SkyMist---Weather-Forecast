@@ -5,20 +5,42 @@
   --ac2: #f87015;
 }
 
-body.theme-sunny        { --ac: #513109; --ac2: #f87015; }
-body.theme-clear        { --ac: #38bdf8; --ac2: #0ea5e9; }
-body.theme-cloudy       { --ac: #94a3b8; --ac2: #64748b; }
-body.theme-rainy        { --ac: #60a5fa; --ac2: #3b82f6; }
-body.theme-snowy        { --ac: #bae6fd; --ac2: #7dd3fc; }
-body.theme-stormy       { --ac: #818cf8; --ac2: #6366f1; }
-body.theme-foggy        { --ac: #d4a96a; --ac2: #b8824a; }
-body.theme-hot          { --ac: #fb923c; --ac2: #ea580c; }
-body.theme-night        { --ac: #c4b5fd; --ac2: #a78bfa; }
-body.theme-night-rainy  { --ac: #60a5fa; --ac2: #3b82f6; }
-body.theme-night-stormy { --ac: #818cf8; --ac2: #6366f1; }
-body.theme-night-snowy  { --ac: #bae6fd; --ac2: #7dd3fc; }
-body.theme-night-cloudy { --ac: #94a3b8; --ac2: #64748b; }
+  body.theme-sunny        { --ac: #513109; --ac2: #f87015; --text1: #513109bd; --card-bg: #51310953; --card-bg-hover: #421d063e; }
+body.theme-clear        { --ac: #38bdf8; --ac2: #0ea5e9; --text1: #38bdf8bd; --card-bg: #38bdf830; --card-bg-hover: #0ea5e940; }
+body.theme-cloudy       { --ac: #94a3b8; --ac2: #64748b; --text1: #94a3b8cd; --card-bg: #94a3b8a3; --card-bg-hover: #94a3b8; }
+body.theme-rainy        { --ac: #60a5fa; --ac2: #3b82f6; --text1: #60a5fabd; --card-bg: #3b82f630; --card-bg-hover: #1d4ed840; }
+body.theme-snowy        { --ac: #7571c7; --ac2: #7dd3fc; --text1: #bae6fdbd; --card-bg: #7dd3fc28; --card-bg-hover: #38bdf838; }
+body.theme-stormy       { --ac: #818cf8; --ac2: #6366f1; --text1: #818cf8bd; --card-bg: #6366f128; --card-bg-hover: #4f46e53e; }
+body.theme-foggy        { --ac: #d4a96a; --ac2: #b8824a; --text1: #d4a96abd; --card-bg: #b8824a30; --card-bg-hover: #92602c3e; }
+body.theme-hot          { --ac: #fb923c; --ac2: #ea580c; --text1: #c2440abd; --card-bg: #ea580c30; --card-bg-hover: #c2440a3e; }
+body.theme-night        { --ac: #fde0b5; --ac2: #a78bfa; --text1: #c4b5fdbd; --card-bg: #a78bfa25; --card-bg-hover: #7c3aed38; }
+body.theme-night-rainy  { --ac: #60a5fa; --ac2: #3b82f6; --text1: #60a5fabd; --card-bg: #3b82f628; --card-bg-hover: #1d4ed840; }
+body.theme-night-stormy { --ac: #818cf8; --ac2: #6366f1; --text1: #818cf8bd; --card-bg: #6366f128; --card-bg-hover: #4f46e53e; }
+body.theme-night-snowy  { --ac: #bae6fd; --ac2: #7dd3fc; --text1: #bae6fdbd; --card-bg: #7dd3fc28; --card-bg-hover: #38bdf838; }
+body.theme-night-cloudy { --ac: #94a3b8; --ac2: #64748b; --text1: #94a3b8bd; --card-bg: #64748b28; --card-bg-hover: #4a5568 3e; }
+.font-outfit {
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+}
 
+.pacifico-regular {
+  font-family: "Pacifico", cursive;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: var(--text);
+  transition: color 0.8s;
+}
+
+.font-roboto {
+  font-family: "Roboto Slab", serif;
+  font-style: normal;
+}
+.font-playfair {
+  font-family: "Playfair Display", serif;
+  font-style: normal;
+  font-weight: 700;
+}
 /* ─────────────────────────────────────────────────────────────
    KEYFRAMES — root level, never inside @layer in Tailwind v4
 ───────────────────────────────────────────────────────────── */
@@ -509,3 +531,165 @@ body.theme-night-cloudy { --ac: #94a3b8; --ac2: #64748b; }
     .nav-search-block { flex: 1; width: auto; order: 2; min-width: 0; }
     .nav-controls     { order: 3; margin-left: 0; }
   }
+
+
+  
+/* current weather stat */
+.weather-stat {
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  padding: 10px 20px;
+  border: 1px solid #ffffff71;
+  background: color-mix(in srgb, var(--card-bg) 20%, transparent);
+  color: white;
+  font-size: medium;
+  font-weight: bold;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.weather-stat:hover {
+  transform: translateY(-5px) scale(1.02);
+  background: var(--card-bg-hover);
+}
+
+@media (max-width: 1024px) {
+  .weather-stat {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .weather-stat {
+    font-size: small;
+  }
+}
+
+
+/* hourly */
+#hourly-scroll{
+  display:flex;
+  gap:10px;
+  overflow-x:scroll;
+  overflow-y:visible;
+  padding-bottom:8px;
+  padding-left:2px;
+  padding-right:20px;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-x;
+  cursor:grab;
+}
+#hourly-scroll:active{cursor:grabbing}
+#hourly-scroll::-webkit-scrollbar{display:none}
+.hour-card{
+  flex-shrink:0;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.22);
+  border-radius:16px;
+  padding:14px 14px;
+  text-align:center;
+  backdrop-filter:blur(14px);
+  min-width:68px;
+  transition:background .2s;
+}
+.hour-card.now{
+  background:rgba(255,255,255,0.22);
+  border-color:rgba(255,255,255,0.4);
+}
+.hour-time{font-size:11px;color:var(--text1);margin-bottom:8px}
+.hour-icon{font-size:20px;margin-bottom:8px}
+.hour-temp{font-size:15px;font-weight:600;color:#fff}
+
+
+
+/* forecast grid */
+.fc-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+}
+@media (max-width: 800px) {
+  .fc-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 500px) {
+  .fc-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.fc-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  padding: 1rem 0.75rem;
+  text-align: center;
+  backdrop-filter: blur(20px);
+  transition:
+    transform 0.22s,
+    background 0.22s,
+    border-color 0.8s;
+  animation: riseIn 0.5s ease both;
+  cursor: default;
+}
+.fc-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fc-day {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+.fc-icon {
+  font-size: 2.5rem;
+  margin: 0.25rem 0 0.45rem;
+  line-height: 1;
+}
+
+.fc-desc {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.fc-max {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.fc-divider {
+  margin-top: 1.3rem;
+  height: 1px;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--accent-1) 0px,
+    var(--accent-1) 8px,
+    transparent 8px,
+    transparent 16px
+  );
+}
+.fc-stats {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+  color: var(--text-1);
+  font-size: 0.8rem;
+}
