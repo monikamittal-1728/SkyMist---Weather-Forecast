@@ -8,253 +8,174 @@
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Pacifico&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap&family=Roboto+Slab:wght@100..900&display=swap&family=Instrument+Serif:ital@0;1&display=swap"
       rel="stylesheet"
     />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="src/output.css" />
     <style>
-      /* Fix Tailwind v4's broken .inset-0 utility */
-      .inset-0 {
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-      }
+      .inset-0 { top:0; right:0; bottom:0; left:0; }
     </style>
   </head>
+
   <body>
-    <!-- Toast  -->
-    <div
-      id="toast"
-      class="hidden fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 bg-[#1a1a2e] text-white rounded-2xl px-5 py-4 max-w-[300px] w-[90vw] sm:w-auto border border-red-500/40 shadow-2xl flex flex-col gap-1"
-    >
-      <!-- Close button -->
-      <span
-        onclick="closeToast()"
-        class="absolute top-3 right-4 cursor-pointer opacity-50 hover:opacity-100 transition-opacity text-sm"
-        >✕</span
-      >
 
-      <!-- Title -->
+    <!-- ═══ TOAST ═══ -->
+    <div id="toast"
+      class="hidden fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50
+             bg-[#1a1a2e] text-white rounded-2xl px-5 py-4
+             max-w-[300px] w-[90vw] sm:w-auto
+             border border-red-500/40 shadow-2xl flex flex-col gap-1">
+      <span onclick="closeToast()"
+        class="absolute top-3 right-4 cursor-pointer opacity-50 hover:opacity-100 transition-opacity text-sm">✕</span>
       <div class="font-playfair font-bold text-red-400 text-sm pr-4">Oops!</div>
-
-      <!-- Message -->
       <div id="toastMsg" class="text-white/70 text-sm"></div>
     </div>
 
-    <!------------ Animated Background ---------->
-    <div
-      style="
-        position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 0;
-        pointer-events: none;
-        overflow: hidden;
-      "
-    >
+    <!-- ═══ ANIMATED BACKGROUND ═══ -->
+    <div style="position:fixed;top:0;right:0;bottom:0;left:0;z-index:0;pointer-events:none;overflow:hidden;">
       <div class="bg-gradient" id="bgGradient"></div>
       <canvas id="waveCanvas"></canvas>
-      <div class="sky-glow" id="skyGlow"></div>
-      <div class="sun-orb" id="sunOrb"></div>
-      <div class="moon-orb" id="moonOrb"></div>
-      <div
-        style="
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
-          overflow: hidden;
-        "
-        id="cloudsWrap"
-      >
+      <div class="sky-glow"  id="skyGlow"></div>
+      <div class="sun-orb"   id="sunOrb"></div>
+      <div class="moon-orb"  id="moonOrb"></div>
+      <div style="position:absolute;top:0;right:0;bottom:0;left:0;overflow:hidden;" id="cloudsWrap">
         <div class="cloud cloud-1"></div>
         <div class="cloud cloud-2"></div>
         <div class="cloud cloud-3"></div>
       </div>
-      <div class="rain-wrap" id="rainWrap"></div>
-      <div class="snow-wrap" id="snowWrap"></div>
-      <div class="stars-wrap" id="starsWrap"></div>
+      <div class="rain-wrap"      id="rainWrap"></div>
+      <div class="snow-wrap"      id="snowWrap"></div>
+      <div class="stars-wrap"     id="starsWrap"></div>
       <div class="lightning-wrap" id="lightningWrap"></div>
     </div>
 
-    <!-- ═══════════ APP SHELL ═══════════ -->
+    <!-- ═══ APP SHELL ═══ -->
     <div class="relative z-10 min-h-screen flex flex-col text-white">
-      <header class="nav-shell sticky top-0 z-50">
-        <!-- BRAND -->
+
+      <!-- ── NAVBAR ── -->
+      <header class="nav-shell md:sticky top-0 z-50">
         <div class="nav-brand font-roboto">
           <em class="nav-brand-accent">Sky</em>Mist
         </div>
-
-        <!-- SEARCH -->
         <div class="nav-search-block">
           <div class="nav-search-wrap">
-            <div class="search-ico">
-              <i class="fa-solid fa-magnifying-glass"></i>
-            </div>
+            <div class="search-ico"><i class="fa-solid fa-magnifying-glass"></i></div>
             <input
               class="search-input font-outfit"
-              id="inp"
+              id="searchInput"
               type="text"
               placeholder="Search city…"
               autocomplete="off"
+              onkeydown="if(event.key==='Enter') citySearch()"
             />
-            <button class="search-btn" onclick="doSearch()">Search</button>
+            <button class="search-btn" onclick="citySearch()">Search</button>
           </div>
           <div id="rdrop" class="rdrop hidden"></div>
         </div>
-
-        <!-- CONTROLS -->
         <div class="nav-controls">
-          <button class="round-btn" onclick="doGeo()" title="Use my location">
+          <button class="round-btn" onclick="myLocation()" title="Use my location">
             <i class="fa-solid fa-crosshairs"></i>
           </button>
-          <button class="round-btn" onclick="setUnit()" title="Temp Toggle">
-            °C
-          </button>
-          <!-- <div class="nav-unit-toggle">
-            <button id="bc" class="ub on" onclick="setUnit('C')">°C</button>
-            <button id="bf" class="ub" onclick="setUnit('F')">°F</button>
-          </div> -->
+          <button class="round-btn" onclick="setUnit()" id="unitToggleBtn" title="Toggle °C / °F">°C</button>
         </div>
       </header>
-      <!-- ════════ END NAVBAR ════════ -->
 
-      <!-- ════════ MAIN ════════ -->
-      <main class="flex-1 px-4 py-6 max-w-7xl mx-auto w-full">
-        <!-- current weather section -->
-        <div class="flex justify-between mt-10">
-          <!-- left side current weather -->
-          <div class="flex flex-col">
-            <div class="flex flex-col items-start justify-center gap-2">
-              <span
-                class="font-playfair text-[var(--text)] text-2xl lg:text-4xl"
-                id="city"
-              >
-                New York
-              </span>
-              <span
-                id="country"
-                class="font-roboto text-base rounded-2xl border border-white bg-mauve-500/30 px-3 lg:text-sm text-[var(--muted)] font-bold"
-              >
-                US
-              </span>
-              <div
-                id="liveDate"
-                class="mt-0.5 tracking-[2px] uppercasetransition-colors duration-700 text-[var(--text1)] text-[10px] md:text-xs"
-              >
-                14 march, 2026
+      <!-- ── MAIN ── -->
+      <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ══ CURRENT WEATHER ══ -->
+        <div class="current-weather-grid mt-6 sm:mt-10">
+
+          <!-- LEFT: city + temp -->
+          <div class="flex flex-col gap-2">
+            <div class="flex flex-col gap-1.5">
+              <span class="font-playfair text-2xl sm:text-3xl lg:text-4xl leading-tight" id="city">New York</span>
+              <span id="country"
+                class="font-roboto text-xs sm:text-sm rounded-2xl border border-white/50
+                       bg-white/10 px-3 py-0.5 w-fit font-bold">US</span>
+              <div id="liveDate"
+                class="tracking-widest uppercase text-[var(--text1)] text-[10px] sm:text-xs mt-0.5 transition-colors duration-700">
+                14 March, 2026
               </div>
             </div>
-            <div class="flex gap-3 my-5 justify-baseline">
-              <div
-                class="font-roboto font-extrabold text-[var(--text)] text-7xl sm:text-8xl transition-colors duration-700"
-                id="tempDisplay"
-              >
-                97°
-              </div>
-              <div class="flex flex-col  p-2 justify-end">
-                <div class="text-white/90">H:97° L:97°</div>
-                <div class="text-white/65" id="wF">Feels like 97°</div>
+            <div class="flex items-end gap-3 mt-2 sm:mt-4">
+              <div class="font-roboto font-extrabold text-white leading-none
+                          text-6xl sm:text-7xl lg:text-8xl transition-colors duration-700"
+                   id="tempDisplay">--°</div>
+              <div class="flex flex-col pb-1 gap-0.5">
+                <div class="text-white/90 text-sm" id="tempHiLow">H:--° · L:--°</div>
+                <div class="text-white/65 text-xs"  id="tempFeels">Feels like --°</div>
               </div>
             </div>
           </div>
 
-          <!-- right side current weather -->
-          <div class="flex flex-col items-end">
-            <div class="flex gap-1 flex-col justify-center items-end">
-              <div class="text-5xl" id="condIcon">☀️</div>
-              <div
-                class="font-playfair text-3xl text-[var(--ac)] transition-colors duration-700"
-                id="condName"
-              >
-                Sunny
-              </div>
+          <!-- RIGHT: condition + stats -->
+          <div class="flex flex-col gap-4">
+            <!-- condition icon + name -->
+            <div class="flex items-center gap-3 sm:flex-col sm:items-end sm:gap-1">
+              <div class="text-4xl sm:text-5xl" id="condIcon">☀️</div>
+              <div class="font-playfair text-xl sm:text-2xl lg:text-3xl
+                          text-[var(--ac)] transition-colors duration-700"
+                   id="condName">Sunny</div>
             </div>
-            <!-- Weather stats row -->
-            <div class="flex gap-3 items-center md:justify-end flex-wrap mt-20">
+            <!-- stat cards -->
+            <div class=" grid grid-cols-2 lg:grid-cols-4  gap-4 " >
               <div class="weather-stat">
-                <span class="text-white/80"
-                  ><i class="fa-brands fa-drupal"></i
-                ></span>
-                <span class="text-white/80">Humidity</span>
-                <span id="wH">6%</span>
+                <span class="stat-icon"><i class="fa-brands fa-drupal"></i></span>
+                <span class="stat-label">Humidity</span>
+                <span class="stat-value" id="wH">--%</span>
               </div>
               <div class="weather-stat">
-                <span class="text-white/80"
-                  ><i class="fa-solid fa-wind"></i
-                ></span>
-                <span class="text-white/80">Wind</span>
-                <span id="wW">4.55 m/s </span>
+                <span class="stat-icon"><i class="fa-solid fa-wind"></i></span>
+                <span class="stat-label">Wind</span>
+                <span class="stat-value" id="wW">-- km/h</span>
               </div>
               <div class="weather-stat">
-                <span class="text-white/80"
-                  ><i class="fa-solid fa-temperature-half"></i
-                ></span>
-                <span class="text-white/80">Feels like</span>
-                <span id="wF">34°C</span>
+                <span class="stat-icon"><i class="fa-regular fa-eye"></i></span>
+                <span class="stat-label">Visibility</span>
+                <span class="stat-value" id="wV">-- km</span>
               </div>
               <div class="weather-stat">
-                <span class="text-white/80"
-                  ><i class="fa-regular fa-eye"></i>
-                </span>
-                <span class="text-white/80"> Visibility</span>
-                <span id="wV">10.0 km</span>
-              </div>
-              <div class="weather-stat">
-                <span class="text-white/80"
-                  ><i class="fa-solid fa-bolt"></i>
-                </span>
-                <span class="text-white/80"> Pressure</span>
-                <span id="wP">101 hPa</span>
+                <span class="stat-icon"><i class="fa-solid fa-bolt"></i></span>
+                <span class="stat-label">Pressure</span>
+                <span class="stat-value" id="wP">-- hPa</span>
               </div>
             </div>
           </div>
+
         </div>
-        <!-- ══════════════════════════════════
-         hourly section
-      ══════════════════════════════════ -->
-        <div class="mt-10">
-          <div class="text-[var(--text1)] mb-5 font-roboto font-bold">
-            <i class="fa-solid fa-clock"></i> Hourly Forecast
-          </div>
+        <!-- end current weather -->
+
+        <!-- ══ ALERT BAR ══ -->
+        <div id="alertBar"
+          class="hidden mt-5 rounded-2xl px-4 py-3
+                 bg-gradient-to-br from-[#f2cce1] to-[#e7d5df]
+                 border border-[var(--ac)] flex items-center gap-2">
+          <span class="text-lg flex-shrink-0" id="alertIcon">⚠️</span>
+          <span class="text-[var(--ac)] font-medium text-sm leading-snug" id="alertTxt">Weather alert</span>
+        </div>
+
+        <!-- ══ HOURLY ══ -->
+        <div class="mt-8 sm:mt-10">
+          <div class="section-title"><i class="fa-solid fa-clock"></i> Hourly Forecast</div>
           <div id="hourly-scroll"></div>
         </div>
 
-        <!-- ══════════════════════════════════
-           5 - DAY WEATHER SECTION
-      ══════════════════════════════════ -->
-        <div class="mt-10 flex flex-col">
-          <div class="text-[var(--text1)] mb-5 font-roboto font-bold pb-5">
-            5 - DAY FORECAST
-          </div>
+        <!-- ══ 5-DAY ══ -->
+        <div class="mt-8 sm:mt-10 pb-10">
+          <div class="section-title mb-4">5 — Day Forecast</div>
           <div class="fc-grid" id="fcGrid"></div>
         </div>
-      </main>
-      <!-- ════════ END MAIN ════════ -->
 
-      <!-- ══════════════════════════════════
-         LOADER 
-    ══════════════════════════════════ -->
-      <div
-        id="loader"
-        class="hidden fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/20"
-      >
+      </main>
+
+      <!-- ══ LOADER ══ -->
+      <div id="loader"
+        class="hidden fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/20">
         <div class="flex flex-col items-center gap-3">
-          <div
-            class="w-12 h-12 rounded-full border-4 border-[var(--card-border)] border-t-[var(--accent)] animate-spin"
-          ></div>
-          <p
-            class="text-[var(--text)] font-outfit text-sm tracking-widest uppercase transition-colors duration-700"
-          >
-            Fetching sky data…
-          </p>
+          <div class="w-12 h-12 rounded-full border-4 border-white/20 border-t-[var(--ac)] animate-spin"></div>
+          <p class="text-white font-outfit text-sm tracking-widest uppercase">Fetching sky data…</p>
         </div>
       </div>
+
     </div>
 
     <script src="src/app.js"></script>
