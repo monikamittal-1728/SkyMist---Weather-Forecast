@@ -112,6 +112,52 @@ function displayWeatherDetails(wd, fd) {
     ? (wd.visibility / 1000).toFixed(1) + " km"
     : "—";
   document.getElementById("wP").textContent = wd.main.pressure + " hPa";
+
+   renderHourly(fd, wd.timezone);
+
+}
+
+
+// ─────────────────────────────────────────────────────────────
+//  HOURLY FORECAST
+// ─────────────────────────────────────────────────────────────
+function renderHourly(fd, tzOffsetSec) {
+  const container = document.getElementById("hourly-scroll");
+  container.innerHTML = "";
+
+  const utcMs  = Date.now() + new Date().getTimezoneOffset() * 60000;
+  const nowSec = Math.floor((utcMs + tzOffsetSec * 1000) / 1000);
+
+  // show next 12 slots (3h each = 36h)
+  fd.list.slice(0, 8).forEach(slot => {
+    const slotDate = new Date((utcMs + tzOffsetSec * 1000) - Date.now() + slot.dt * 1000);
+    const isNow    = Math.abs(slot.dt - nowSec) < 5400; // within 1.5h
+
+    const time = new Date(slot.dt * 1000).toLocaleTimeString("en-US", {
+      hour:"2-digit", minute:"2-digit", hour12:true,
+      timeZone:"UTC" // we manually shift so use UTC display
+    });
+
+    // shift display time to city tz
+    const citySlotDate = new Date(slot.dt * 1000 + tzOffsetSec * 1000);
+    const displayTime  = citySlotDate.toLocaleTimeString("en-US", {
+      hour:"numeric", hour12:true, timeZone:"UTC"
+    });
+
+    const isDay = slot.sys?.pod === "d";
+    const temp  = currentUnit === "C"
+      ? Math.round(slot.main.temp)
+      : Math.round(slot.main.temp * 9/5 + 32);
+
+    const card = document.createElement("div");
+    card.className = `hour-card${isNow ? " now" : ""}`;
+    card.innerHTML = `
+      <div class="hour-time">${isNow ? "Now" : displayTime}</div>
+      <div class="hour-icon">${owmEmoji(slot.weather[0].id, slot.sys?.pod === "d")}</div>
+      <div class="hour-temp">${temp}°</div>
+    `;
+    container.appendChild(card);
+  });
 }
 
 // ─────────────────────────────────────────────────────────────
