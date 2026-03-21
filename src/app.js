@@ -113,10 +113,10 @@ function displayWeatherDetails(wd, fd) {
     : "—";
   document.getElementById("wP").textContent = wd.main.pressure + " hPa";
 
-   renderHourly(fd, wd.timezone);
-
+  // forecasts
+  renderForecast(fd);
+  renderHourly(fd, wd.timezone);
 }
-
 
 // ─────────────────────────────────────────────────────────────
 //  HOURLY FORECAST
@@ -125,29 +125,36 @@ function renderHourly(fd, tzOffsetSec) {
   const container = document.getElementById("hourly-scroll");
   container.innerHTML = "";
 
-  const utcMs  = Date.now() + new Date().getTimezoneOffset() * 60000;
+  const utcMs = Date.now() + new Date().getTimezoneOffset() * 60000;
   const nowSec = Math.floor((utcMs + tzOffsetSec * 1000) / 1000);
 
   // show next 12 slots (3h each = 36h)
-  fd.list.slice(0, 8).forEach(slot => {
-    const slotDate = new Date((utcMs + tzOffsetSec * 1000) - Date.now() + slot.dt * 1000);
-    const isNow    = Math.abs(slot.dt - nowSec) < 5400; // within 1.5h
+  fd.list.slice(0, 8).forEach((slot) => {
+    const slotDate = new Date(
+      utcMs + tzOffsetSec * 1000 - Date.now() + slot.dt * 1000,
+    );
+    const isNow = Math.abs(slot.dt - nowSec) < 5400; // within 1.5h
 
     const time = new Date(slot.dt * 1000).toLocaleTimeString("en-US", {
-      hour:"2-digit", minute:"2-digit", hour12:true,
-      timeZone:"UTC" // we manually shift so use UTC display
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "UTC", // we manually shift so use UTC display
     });
 
     // shift display time to city tz
     const citySlotDate = new Date(slot.dt * 1000 + tzOffsetSec * 1000);
-    const displayTime  = citySlotDate.toLocaleTimeString("en-US", {
-      hour:"numeric", hour12:true, timeZone:"UTC"
+    const displayTime = citySlotDate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      hour12: true,
+      timeZone: "UTC",
     });
 
     const isDay = slot.sys?.pod === "d";
-    const temp  = currentUnit === "C"
-      ? Math.round(slot.main.temp)
-      : Math.round(slot.main.temp * 9/5 + 32);
+    const temp =
+      currentUnit === "C"
+        ? Math.round(slot.main.temp)
+        : Math.round((slot.main.temp * 9) / 5 + 32);
 
     const card = document.createElement("div");
     card.className = `hour-card${isNow ? " now" : ""}`;
@@ -159,6 +166,72 @@ function renderHourly(fd, tzOffsetSec) {
     container.appendChild(card);
   });
 }
+
+// // ─────────────────────────────────────────────────────────────
+// //  5-DAY FORECAST
+// // ─────────────────────────────────────────────────────────────
+function renderForecast(fd) {
+  const grid = document.getElementById("fcGrid");
+
+  // api returns 40 entries (every 3hr)
+  // we pick the best entry per day — prefer noon (12:00:00)
+  const dailyMap = {};
+
+  fd.list.forEach((item) => {
+    const date = item.dt_txt.split(" ")[0]; // "2026-03-12"
+    const hour = item.dt_txt.split(" ")[1]; // "12:00:00"
+
+    // save first entry of the day, overwrite if noon entry found
+    if (!dailyMap[date] || hour === "12:00:00") {
+      dailyMap[date] = item;
+    }
+  });
+
+  // convert object to array and take only 5 days
+  const days = Object.values(dailyMap).slice(1, 6);
+
+  grid.innerHTML = days
+    .map((day) => {
+      // dt is unix timestamp in seconds — JS needs milliseconds so × 1000
+      const date = new Date(day.dt * 1000);
+
+      // format day name: "Wed"
+      const dayName = date.toLocaleDateString("en-US", { weekday: "short" });
+
+      // format date string: "12 Mar"
+      const dateStr = date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+      });
+
+      // get weather emoji
+      const emoji = owmEmoji(day.weather[0].id, true);
+      // capitalize each word of description
+      const desc = day.weather[0].description.replace(/\b\w/g, (c) =>
+        c.toUpperCase(),
+      );
+
+      const tempMax = Math.round(day.main.temp_max);
+      const humidity = day.main.humidity;
+      const wind = (day.wind.speed * 3.6).toFixed(1);
+
+      return `
+        <div class="fc-card">
+          <div class="fc-day">${dayName} ${dateStr}</div>
+          <div class="fc-icon">${emoji}</div>
+          <div class="fc-max">${tempMax}° C</div>
+          <div class="fc-desc">${desc}</div>
+          <div class="fc-divider"></div>
+          <div class="fc-stats">
+            <span>💧 ${humidity}%</span>
+            <span>💨 ${wind} km/h</span>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
 
 // ─────────────────────────────────────────────────────────────
 //  TEMPERATURES
@@ -259,7 +332,6 @@ function checkAlert(tc) {
   }
 }
 
-
 // ─────────────────────────────────────────────────────────────
 //  RECENT CITIES
 // ─────────────────────────────────────────────────────────────
@@ -279,7 +351,6 @@ function addRecentCity(city) {
   if (list.length > 8) list = list.slice(0, 8);
   localStorage.setItem(RECENT_KEY, JSON.stringify(list));
 }
-
 
 // ─────────────────────────────────────────────────────────────
 //  LOADER / TOAST

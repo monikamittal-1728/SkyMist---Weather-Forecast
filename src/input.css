@@ -846,7 +846,7 @@ body.theme-night-cloudy {
 .fc-day {
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--text1);
+  color: #ffffffa7;
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 8px;
@@ -870,12 +870,11 @@ body.theme-night-cloudy {
 .fc-divider {
   margin-top: 1rem;
   height: 1px;
-  background-image: repeating-linear-gradient(
+  background: linear-gradient(
     to right,
-    var(--ac) 0px,
-    var(--ac) 6px,
-    transparent 6px,
-    transparent 12px
+    transparent,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent
   );
 }
 .fc-stats {
@@ -883,7 +882,7 @@ body.theme-night-cloudy {
   display: flex;
   gap: 0.4rem;
   flex-direction: column;
-  color: var(--text1);
+  color: #ffffffa7;
   font-size: 0.75rem;
 }
 
