@@ -20,8 +20,25 @@ const RECENT_KEY = "skyMist_recent_city";
 // ─────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   generateParticles();
+  renderRecentDropdown();
   setBackground(800, true); // sunny default until real data loads
 });
+
+// ─────────────────────────────────────────────────────────────
+//  SEARCH
+// ─────────────────────────────────────────────────────────────
+function citySearch() {
+  const v = document.getElementById("searchInput").value.trim();
+  if (!v) { showToast("Please enter a city name to search."); return; }
+  createCityUrl(v);
+}
+
+function createCityUrl(city) {
+  fetchWeatherDetails(
+    `${BASE}/weather?q=${encodeURIComponent(city)}&appid=${KEY}&units=metric`,
+    `${BASE}/forecast?q=${encodeURIComponent(city)}&appid=${KEY}&units=metric`
+  );
+}
 
 // ─────────────────────────────────────────────────────────────
 //  GEOLOCATION
@@ -76,8 +93,8 @@ function displayWeatherDetails(wd, fd) {
   document.getElementById("searchInput").value = wd.name;
 
   // recent
-  addRecentCity(wd.name); //TODo
-  // renderRecentDropdown();
+  addRecentCity(wd.name);
+  renderRecentDropdown();
 
   // city + country
   const parts = wd.name.split(" "),
@@ -232,7 +249,6 @@ function renderForecast(fd) {
     .join("");
 }
 
-
 // ─────────────────────────────────────────────────────────────
 //  TEMPERATURES
 // ─────────────────────────────────────────────────────────────
@@ -351,6 +367,71 @@ function addRecentCity(city) {
   if (list.length > 8) list = list.slice(0, 8);
   localStorage.setItem(RECENT_KEY, JSON.stringify(list));
 }
+
+// ─────────────────────────────────────────────────────────────
+//  DROP DOWN WITH RECENT CITIES
+// ─────────────────────────────────────────────────────────────
+
+function renderRecentDropdown() {
+  const drop = document.getElementById("rdrop");
+  const list = getRecentCities();
+  if (!list.length) { drop.classList.add("hidden"); return; }
+
+  drop.innerHTML = `
+    <div class="rdrop-head">
+      <span>Recent</span>
+      <button class="rdrop-clear" onclick="clearRecent()">Clear all</button>
+    </div>
+    ${list.map((c, i) => `
+      <div class="rdrop-item" onclick="pickRecent('${c}')">
+        <i class="fa-solid fa-clock-rotate-left" style="opacity:.45;font-size:11px"></i>
+        <span>${c}</span>
+        <button class="rdrop-item-del" onclick="event.stopPropagation();deleteRecent(${i})">✕</button>
+      </div>
+    `).join("")}
+  `;
+}
+
+function pickRecent(city) {
+  document.getElementById("searchInput").value = city;
+  document.getElementById("rdrop").classList.add("hidden");
+  createCityUrl(city);
+}
+
+function deleteRecent(i) {
+  const list = getRecentCities();
+  list.splice(i, 1);
+  localStorage.setItem(RECENT_KEY, JSON.stringify(list));
+  renderRecentDropdown();
+}
+
+function clearRecent() {
+  localStorage.removeItem(RECENT_KEY);
+  document.getElementById("rdrop").classList.add("hidden");
+}
+
+// show/hide dropdown on input focus
+document.addEventListener("DOMContentLoaded", () => {
+  const inp  = document.getElementById("searchInput");
+  const drop = document.getElementById("rdrop");
+  inp.addEventListener("focus", () => {
+    if (getRecentCities().length) drop.classList.remove("hidden");
+  });
+  document.addEventListener("click", e => {
+    if (!inp.contains(e.target) && !drop.contains(e.target)) drop.classList.add("hidden");
+  });
+});
+
+document.getElementById("searchInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const city = e.target.value.trim();
+    if (!city) return;
+    document.getElementById("rdrop").classList.add("hidden");
+    createCityUrl(city)
+      e.target.blur(); 
+  }
+});
 
 // ─────────────────────────────────────────────────────────────
 //  LOADER / TOAST
