@@ -14,26 +14,26 @@ let feelsTemp = null;
 let currentUnit = "C";
 let cityClockInterval = null;
 const RECENT_KEY = "skyMist_recent_city";
-const SEACHED_CITY = "searched_city"
+const SEACHED_CITY = "searched_city";
 // ─────────────────────────────────────────────────────────────
 //  BOOT
 // ─────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   generateParticles();
   renderSearchedCity();
-  setBackground(900, false); 
+  setBackground(900, false);
 });
 // ─────────────────────────────────────────────────────────────
 //  Manage Searched City In Session for Refresh handling
 // ─────────────────────────────────────────────────────────────
-function renderSearchedCity(){
+function renderSearchedCity() {
   const lastCity = sessionStorage.getItem(SEACHED_CITY);
-  if(lastCity != null){
+  if (lastCity != null) {
     createCityUrl(lastCity);
   }
 }
-function saveCity(city){
-  sessionStorage.setItem(SEACHED_CITY,city);
+function saveCity(city) {
+  sessionStorage.setItem(SEACHED_CITY, city);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -379,7 +379,6 @@ function addRecentCity(city) {
     (c) => c.toLowerCase() !== city.toLowerCase(),
   );
   list.unshift(city);
-  if (list.length > 8) list = list.slice(0, 8);
   localStorage.setItem(RECENT_KEY, JSON.stringify(list));
 }
 
@@ -493,7 +492,7 @@ function closeToast() {
 let targetWaveColor = [80, 170, 255];
 
 const BG_THEMES = {
-  sunny: ["#FF9612", "#FFB343", "#FFD77C", "#FFF3C3"],
+  sunny:  ["#ECD8EC", "#A898C8", "#6068A8", "#2A4878"],
   clear: ["#5ab3e8", "#3a8fc8", "#1e6aaa", "#0d3e7a"],
   cloudy: ["#6a86aa", "#4a6688", "#2c4a6e", "#162a44"],
   rainy: ["#2e4e72", "#1e3454", "#122038", "#080e1c"],
@@ -502,16 +501,18 @@ const BG_THEMES = {
   foggy: ["#607080", "#485a6a", "#323e4c", "#1e2830"],
   night: ["#0a1426", "#061020", "#040c18", "#020810"],
 };
+// After — extract shared value
+const MUTED_BLUE = [76, 104, 140];
 
 const WAVE_COLORS = {
-  sunny: [225, 180, 100],
-  clear: [80, 170, 255],
-  cloudy: [76, 104, 140],
-  rainy: [76, 104, 140],
-  snowy: [80, 130, 190],
+  sunny:  [190, 100, 205],
+  clear:  [80, 170, 255],
+  cloudy: MUTED_BLUE,
+  rainy:  MUTED_BLUE,
+  snowy:  [80, 130, 190],
   stormy: [80, 72, 122],
-  foggy: [76, 104, 140],
-  night: [55, 85, 178],
+  foggy:  MUTED_BLUE,
+  night:  [55, 85, 178],
 };
 
 const NIGHT_VARIANTS = ["rainy", "stormy", "snowy", "cloudy"];
@@ -545,7 +546,6 @@ function setBackground(owmId, isDay) {
     targetWaveColor = WAVE_COLORS.night;
 
     if (grp === "rainy" || grp === "stormy") {
-      colors = ["#0e1826", "#080e18", "#040a10", "#020608"];
       clouds.forEach((c) => (c.style.opacity = "0.5"));
       rainWrap.style.opacity = "1";
       starsWrap.style.opacity = "0.2";

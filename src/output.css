@@ -706,53 +706,53 @@
   --card-bg-hover: #0ea5e940;
 }
 body.theme-sunny {
-  --ac: #513109;
-  --ac2: #f87015;
-  --text1: #513109bd;
-  --card-bg: #51310953;
-  --card-bg-hover: #421d063e;
+  --ac: #6349b0;
+  --ac2: #8e74dc;
+  --text1: #dbd1fa;
+  --card-bg: rgba(255, 255, 255, 0.15);
+  --card-bg-hover: #856fc6c4;
 }
 body.theme-clear {
-  --ac: #38bdf8;
-  --ac2: #0ea5e9;
-  --text1: #38bdf8bd;
-  --card-bg: #38bdf830;
-  --card-bg-hover: #0ea5e940;
+  --ac: #fff0c0;
+  --ac2: #e7b621;
+  --text1: rgba(255, 240, 192, 0.664);
+  --card-bg: rgba(255, 240, 192, 0.10);
+  --card-bg-hover: #18396069;
 }
 body.theme-cloudy {
-  --ac: #94a3b8;
-  --ac2: #64748b;
-  --text1: #94a3b8bd;
-  --card-bg: #64748b30;
-  --card-bg-hover: #4a556840;
+  --ac: #ffeed5;
+  --ac2: #33485c;
+  --text1: #ffeed57d;
+  --card-bg: rgba(255, 255, 255, 0.15);
+  --card-bg-hover: #33485c6d;
 }
 body.theme-rainy {
   --ac: #60a5fa;
-  --ac2: #3b82f6;
-  --text1: #60a5fabd;
-  --card-bg: #3b82f630;
+  --ac2: #154ba3;
+  --text1: #a9cdf9a9;
+  --card-bg: #b4d1ff30;
   --card-bg-hover: #1d4ed840;
 }
 body.theme-snowy {
-  --ac: #7dd3fc;
-  --ac2: #38bdf8;
-  --text1: #bae6fdbd;
-  --card-bg: #7dd3fc28;
-  --card-bg-hover: #38bdf838;
+  --ac: #d5eeff;
+  --ac2: #33485c;
+  --text1: #33485cab;
+  --card-bg: rgba(255, 255, 255, 0.15);
+  --card-bg-hover: #33485c6d;
 }
 body.theme-stormy {
-  --ac: #818cf8;
-  --ac2: #6366f1;
-  --text1: #818cf8bd;
-  --card-bg: #6366f128;
-  --card-bg-hover: #4f46e53e;
+  --ac: #bae6fd;
+  --ac2: #56c5f8;
+  --text1: #bae5fdb6;
+  --card-bg: #7dd3fc28;
+  --card-bg-hover: #8bbcd7a5;
 }
 body.theme-foggy {
-  --ac: #d4a96a;
-  --ac2: #b8824a;
-  --text1: #d4a96abd;
-  --card-bg: #b8824a30;
-  --card-bg-hover: #92602c3e;
+  --ac: #d4e8f0;
+  --ac2: #36728a;
+  --text1: #bae3f370;
+  --card-bg: rgba(255, 255, 255, 0.08);
+  --card-bg-hover: #7ea7b68e;
 }
 body.theme-hot {
   --ac: #fb923c;
@@ -761,40 +761,12 @@ body.theme-hot {
   --card-bg: #ea580c30;
   --card-bg-hover: #c2440a3e;
 }
-body.theme-night {
-  --ac: #fde0b5;
-  --ac2: #a78bfa;
-  --text1: #c4b5fdbd;
-  --card-bg: #a78bfa25;
-  --card-bg-hover: #7c3aed38;
-}
-body.theme-night-rainy {
-  --ac: #60a5fa;
-  --ac2: #3b82f6;
-  --text1: #60a5fabd;
-  --card-bg: #3b82f628;
-  --card-bg-hover: #1d4ed840;
-}
-body.theme-night-stormy {
-  --ac: #818cf8;
-  --ac2: #6366f1;
-  --text1: #818cf8bd;
-  --card-bg: #6366f128;
-  --card-bg-hover: #4f46e53e;
-}
-body.theme-night-snowy {
+body.theme-night , body.theme-night-rainy, body.theme-night-stormy, body.theme-night-snowy , body.theme-night-cloudy {
   --ac: #bae6fd;
-  --ac2: #7dd3fc;
-  --text1: #bae6fdbd;
+  --ac2: #56c5f8;
+  --text1: #bae5fdb6;
   --card-bg: #7dd3fc28;
-  --card-bg-hover: #38bdf838;
-}
-body.theme-night-cloudy {
-  --ac: #94a3b8;
-  --ac2: #64748b;
-  --text1: #94a3b8bd;
-  --card-bg: #64748b28;
-  --card-bg-hover: #4a556838;
+  --card-bg-hover: #8bbcd7a5;
 }
 .font-outfit {
   font-family: "Outfit", sans-serif;
@@ -1203,12 +1175,13 @@ body.theme-night-cloudy {
   top: calc(100% + 8px);
   left: 0;
   right: 0;
+  max-height: 300px;
   z-index: 200;
   background: rgba(10, 15, 30, 0.97);
   backdrop-filter: blur(30px);
   border: 1.5px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
-  overflow: hidden;
+  overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 .rdrop-head {
@@ -1573,7 +1546,7 @@ body.theme-night-cloudy {
   background: rgba(255, 255, 255, 0.04);
 }
 .es-compass-ring::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 8px;
   border-radius: 50%;
@@ -1604,7 +1577,7 @@ body.theme-night-cloudy {
 .es-needle-s {
   width: 4px;
   height: 45px;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0.5));
+  background: linear-gradient( to bottom, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.5) );
   border-radius: 0 0 4px 4px;
 }
 .es-needle-dot {
@@ -1703,7 +1676,7 @@ body.theme-night-cloudy {
   overflow: hidden;
 }
 .es-city::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: var(--city-glow);
