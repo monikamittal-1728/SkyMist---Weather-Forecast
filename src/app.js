@@ -20,8 +20,8 @@ const RECENT_KEY = "skyMist_recent_city";
 // ─────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   generateParticles();
-  renderRecentDropdown();
-  setBackground(800, true); // sunny default until real data loads
+  // renderRecentDropdown(getRecentCities());
+  setBackground(900, false); // sunny default until real data loads
 });
 
 // ─────────────────────────────────────────────────────────────
@@ -29,14 +29,17 @@ document.addEventListener("DOMContentLoaded", () => {
 // ─────────────────────────────────────────────────────────────
 function citySearch() {
   const v = document.getElementById("searchInput").value.trim();
-  if (!v) { showToast("Please enter a city name to search."); return; }
+  if (!v) {
+    showToast("Please enter a city name to search.");
+    return;
+  }
   createCityUrl(v);
 }
 
 function createCityUrl(city) {
   fetchWeatherDetails(
     `${BASE}/weather?q=${encodeURIComponent(city)}&appid=${KEY}&units=metric`,
-    `${BASE}/forecast?q=${encodeURIComponent(city)}&appid=${KEY}&units=metric`
+    `${BASE}/forecast?q=${encodeURIComponent(city)}&appid=${KEY}&units=metric`,
   );
 }
 
@@ -91,10 +94,9 @@ function displayWeatherDetails(wd, fd) {
 
   // search box
   document.getElementById("searchInput").value = wd.name;
-
+  removeEmptyState();
   // recent
   addRecentCity(wd.name);
-  renderRecentDropdown();
 
   // city + country
   const parts = wd.name.split(" "),
@@ -372,23 +374,29 @@ function addRecentCity(city) {
 //  DROP DOWN WITH RECENT CITIES
 // ─────────────────────────────────────────────────────────────
 
-function renderRecentDropdown() {
+function renderRecentDropdown(list) {
   const drop = document.getElementById("rdrop");
-  const list = getRecentCities();
-  if (!list.length) { drop.classList.add("hidden"); return; }
-
+  if (!list.length) {
+    drop.classList.add("hidden");
+    return;
+  }
+  drop.classList.remove("hidden");
   drop.innerHTML = `
     <div class="rdrop-head">
       <span>Recent</span>
       <button class="rdrop-clear" onclick="clearRecent()">Clear all</button>
     </div>
-    ${list.map((c, i) => `
+    ${list
+      .map(
+        (c, i) => `
       <div class="rdrop-item" onclick="pickRecent('${c}')">
         <i class="fa-solid fa-clock-rotate-left" style="opacity:.45;font-size:11px"></i>
         <span>${c}</span>
         <button class="rdrop-item-del" onclick="event.stopPropagation();deleteRecent(${i})">✕</button>
       </div>
-    `).join("")}
+    `,
+      )
+      .join("")}
   `;
 }
 
@@ -402,7 +410,7 @@ function deleteRecent(i) {
   const list = getRecentCities();
   list.splice(i, 1);
   localStorage.setItem(RECENT_KEY, JSON.stringify(list));
-  renderRecentDropdown();
+  renderRecentDropdown(list);
 }
 
 function clearRecent() {
@@ -411,28 +419,42 @@ function clearRecent() {
 }
 
 // show/hide dropdown on input focus
-document.addEventListener("DOMContentLoaded", () => {
-  const inp  = document.getElementById("searchInput");
-  const drop = document.getElementById("rdrop");
-  inp.addEventListener("focus", () => {
-    if (getRecentCities().length) drop.classList.remove("hidden");
-  });
-  document.addEventListener("click", e => {
-    if (!inp.contains(e.target) && !drop.contains(e.target)) drop.classList.add("hidden");
-  });
+const inp = document.getElementById("searchInput");
+const drop = document.getElementById("rdrop");
+inp.addEventListener("focus", () => {
+  console.log("here 1", getRecentCities().length);
+
+  if (getRecentCities().length) {
+    renderRecentDropdown(getRecentCities());
+    drop.classList.remove("hidden");
+  }
+});
+document.addEventListener("click", (e) => {
+  if (!inp.contains(e.target) && !drop.contains(e.target))
+    drop.classList.add("hidden");
 });
 
-document.getElementById("searchInput").addEventListener("keydown", (e) => {
+inp.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
     const city = e.target.value.trim();
     if (!city) return;
-    document.getElementById("rdrop").classList.add("hidden");
-    createCityUrl(city)
-      e.target.blur(); 
+    drop.classList.add("hidden");
+    createCityUrl(city);
+    e.target.blur();
   }
 });
 
+inp.addEventListener("input", () => {
+  const query = inp.value.trim().toLowerCase();
+  const cities = getRecentCities();
+  if (!query) {
+    renderRecentDropdown(cities);
+    return;
+  }
+  const filtered = cities.filter((c) => c.toLowerCase().includes(query));
+  renderRecentDropdown(filtered);
+});
 // ─────────────────────────────────────────────────────────────
 //  LOADER / TOAST
 // ─────────────────────────────────────────────────────────────
@@ -723,3 +745,13 @@ function drawWaves() {
   requestAnimationFrame(drawWaves);
 }
 drawWaves();
+
+function pickEmptyCity(city) {
+  document.getElementById("searchInput").value = city;
+  createCityUrl(city);
+}
+
+function removeEmptyState() {
+  document.getElementById("emptyState").classList.add("es-hidden");
+  document.getElementById("weatherContent").classList.remove("hidden");
+}
