@@ -14,15 +14,27 @@ let feelsTemp = null;
 let currentUnit = "C";
 let cityClockInterval = null;
 const RECENT_KEY = "skyMist_recent_city";
-
+const SEACHED_CITY = "searched_city"
 // ─────────────────────────────────────────────────────────────
 //  BOOT
 // ─────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   generateParticles();
-  // renderRecentDropdown(getRecentCities());
-  setBackground(900, false); // sunny default until real data loads
+  renderSearchedCity();
+  setBackground(900, false); 
 });
+// ─────────────────────────────────────────────────────────────
+//  Manage Searched City In Session for Refresh handling
+// ─────────────────────────────────────────────────────────────
+function renderSearchedCity(){
+  const lastCity = sessionStorage.getItem(SEACHED_CITY);
+  if(lastCity != null){
+    createCityUrl(lastCity);
+  }
+}
+function saveCity(city){
+  sessionStorage.setItem(SEACHED_CITY,city);
+}
 
 // ─────────────────────────────────────────────────────────────
 //  SEARCH
@@ -94,6 +106,7 @@ function displayWeatherDetails(wd, fd) {
 
   // search box
   document.getElementById("searchInput").value = wd.name;
+  saveCity(wd.name);
   removeEmptyState();
   // recent
   addRecentCity(wd.name);
