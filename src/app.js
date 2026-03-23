@@ -255,8 +255,8 @@ function renderForecast(fd) {
           <div class="fc-desc">${desc}</div>
           <div class="fc-divider"></div>
           <div class="fc-stats">
-            <span>💧 ${humidity}%</span>
-            <span>💨 ${wind} km/h</span>
+            <span><i class="fa-brands fa-drupal"></i> ${humidity}%</span>
+            <span><i class="fa-solid fa-wind"></i> ${wind} km/h</span>
           </div>
         </div>
       `;
@@ -492,7 +492,7 @@ function closeToast() {
 let targetWaveColor = [80, 170, 255];
 
 const BG_THEMES = {
-  sunny:  ["#ECD8EC", "#A898C8", "#6068A8", "#2A4878"],
+  sunny: ["#ECD8EC", "#A898C8", "#6068A8", "#2A4878"],
   clear: ["#5ab3e8", "#3a8fc8", "#1e6aaa", "#0d3e7a"],
   cloudy: ["#6a86aa", "#4a6688", "#2c4a6e", "#162a44"],
   rainy: ["#2e4e72", "#1e3454", "#122038", "#080e1c"],
@@ -505,14 +505,14 @@ const BG_THEMES = {
 const MUTED_BLUE = [76, 104, 140];
 
 const WAVE_COLORS = {
-  sunny:  [190, 100, 205],
-  clear:  [80, 170, 255],
+  sunny: [190, 100, 205],
+  clear: [80, 170, 255],
   cloudy: MUTED_BLUE,
-  rainy:  MUTED_BLUE,
-  snowy:  [80, 130, 190],
+  rainy: MUTED_BLUE,
+  snowy: [80, 130, 190],
   stormy: [80, 72, 122],
-  foggy:  MUTED_BLUE,
-  night:  [55, 85, 178],
+  foggy: MUTED_BLUE,
+  night: [55, 85, 178],
 };
 
 const NIGHT_VARIANTS = ["rainy", "stormy", "snowy", "cloudy"];
