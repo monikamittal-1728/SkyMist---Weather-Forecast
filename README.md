@@ -91,19 +91,19 @@ npm run dev
 ## Screenshots
 
 ### Empty State
-![Empty State](screenshots/app1.png)
+![Empty State](screenshots/empty.png)
 
 ### Haze weather
-![Sunny Theme](screenshots/app2.png)
+![Sunny Theme](screenshots/haze.png)
 
 ### Night Theme
-![Night Theme](screenshots/app4.png)
+![Night Theme](screenshots/night.png)
 
 ### Rainy Weather
-![Rainy Theme](screenshots/app3.png)
+![Rainy Theme](screenshots/rain.png)
 
 ### 5-Day Forecast
-![Forecast](screenshots/app5.png)
+![Forecast](screenshots/forecast.png)
 
 ### Mobile View
 ![Mobile](screenshots/mobile.png)
