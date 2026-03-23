@@ -33,6 +33,7 @@ SkyMist is a simple and responsive weather forecast web application built with H
 ```
 skymist/
 ├── index.html          # Main HTML file
+├── screenshots
 ├── src/
 │   ├── app.js          # All JavaScript logic
 │   ├── input.css       # Tailwind directives
@@ -90,7 +91,7 @@ npm run dev
 ## Screenshots
 
 ### Empty State
-![Empty State](screenshots/app1.PNG)
+![Empty State](screenshots/app1.png)
 
 ### Haze weather
 ![Sunny Theme](screenshots/app2.png)
@@ -105,8 +106,8 @@ npm run dev
 ![Forecast](screenshots/app5.png)
 
 ### Mobile View
-![Mobile](screenshots/mobilapp6e.png)
-```
+![Mobile](screenshots/mobile.png)
+
 
 ---
 
