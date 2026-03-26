@@ -12,9 +12,10 @@ let highTemp = null;
 let lowTemp = null;
 let feelsTemp = null;
 let currentUnit = "C";
+let isLoading = false;
 let cityClockInterval = null;
 const RECENT_KEY = "skyMist_recent_city";
-const SEACHED_CITY = "searched_city";
+const SEARCHED_CITY = "searched_city";
 // ─────────────────────────────────────────────────────────────
 //  BOOT
 // ─────────────────────────────────────────────────────────────
@@ -27,28 +28,49 @@ document.addEventListener("DOMContentLoaded", () => {
 //  Manage Searched City In Session for Refresh handling
 // ─────────────────────────────────────────────────────────────
 function renderSearchedCity() {
-  const lastCity = sessionStorage.getItem(SEACHED_CITY);
+  const lastCity = sessionStorage.getItem(SEARCHED_CITY);
   if (lastCity != null) {
     createCityUrl(lastCity);
   }
 }
 function saveCity(city) {
-  sessionStorage.setItem(SEACHED_CITY, city);
+  sessionStorage.setItem(SEARCHED_CITY, city);
 }
 
 // ─────────────────────────────────────────────────────────────
 //  SEARCH
 // ─────────────────────────────────────────────────────────────
 function citySearch() {
+  if (isLoading) return;
   const v = document.getElementById("searchInput").value.trim();
+
   if (!v) {
-    showToast("Please enter a city name to search.");
+    showToast("Please enter a city name.");
+    document.getElementById("searchInput").focus();
     return;
   }
+  const last = sessionStorage.getItem(SEARCHED_CITY);
+  if (last && last.toLowerCase() === v.toLowerCase()) {
+    return;
+  }
+
+  // prevent numbers & special chars
+  if (!/^[a-zA-Z\s-]+$/.test(v)) {
+    showToast("Enter a valid city name (letters only).");
+    return;
+  }
+
+  // max length
+  if (v.length > 50) {
+    showToast("City name too long (max 50 characters).");
+    return;
+  }
+  isLoading = true;
   createCityUrl(v);
 }
 
 function createCityUrl(city) {
+  showLoader();
   fetchWeatherDetails(
     `${BASE}/weather?q=${encodeURIComponent(city)}&appid=${KEY}&units=metric`,
     `${BASE}/forecast?q=${encodeURIComponent(city)}&appid=${KEY}&units=metric`,
@@ -59,16 +81,20 @@ function createCityUrl(city) {
 //  GEOLOCATION
 // ─────────────────────────────────────────────────────────────
 function myLocation() {
+  showLoader();
   if (!navigator.geolocation) {
     showToast("Geolocation is not supported by your browser.");
+    hideLoader();
     return;
   }
   navigator.geolocation.getCurrentPosition(
     (pos) => createLatLngUrl(pos.coords.latitude, pos.coords.longitude),
-    () =>
+    () => {
+      hideLoader();
       showToast(
         "Location access denied. Please allow location permissions and try again.",
-      ),
+      );
+    },
   );
 }
 
@@ -83,18 +109,25 @@ function createLatLngUrl(lat, lng) {
 //  FETCH
 // ─────────────────────────────────────────────────────────────
 function fetchWeatherDetails(weatherUrl, forecastUrl) {
-  showLoader();
   Promise.all([fetch(weatherUrl), fetch(forecastUrl)])
     .then((responses) => Promise.all(responses.map((r) => r.json())))
     .then(([wd, fd]) => {
-      if (wd.cod != 200) throw new Error(wd.message);
-      if (fd.cod != 200) throw new Error(fd.message);
+      if (Number(wd.cod) !== 200) throw new Error(wd.message);
+      if (Number(fd.cod) !== 200) throw new Error(fd.message);
+      isLoading = false;
       hideLoader();
       displayWeatherDetails(wd, fd);
     })
     .catch((err) => {
       hideLoader();
-      showToast(err.message || "Could not get weather.");
+      isLoading = false;
+      let msg = "Something went wrong";
+      if (err.message.includes("404")) {
+        msg = "City not found. Try another name.";
+      } else if (err.message.includes("network")) {
+        msg = "Check your internet connection.";
+      }
+      showToast(msg);
     });
 }
 
@@ -255,7 +288,7 @@ function renderForecast(fd) {
           <div class="fc-desc">${desc}</div>
           <div class="fc-divider"></div>
           <div class="fc-stats">
-            <span><i class="fa-brands fa-drupal"></i> ${humidity}%</span>
+            <span><i class="fa-solid fa-droplet"></i> ${humidity}%</span>
             <span><i class="fa-solid fa-wind"></i> ${wind} km/h</span>
           </div>
         </div>
@@ -379,6 +412,7 @@ function addRecentCity(city) {
     (c) => c.toLowerCase() !== city.toLowerCase(),
   );
   list.unshift(city);
+  list = list.slice(0, 15); // cap at 15 recent cities
   localStorage.setItem(RECENT_KEY, JSON.stringify(list));
 }
 
@@ -434,8 +468,6 @@ function clearRecent() {
 const inp = document.getElementById("searchInput");
 const drop = document.getElementById("rdrop");
 inp.addEventListener("focus", () => {
-  console.log("here 1", getRecentCities().length);
-
   if (getRecentCities().length) {
     renderRecentDropdown(getRecentCities());
     drop.classList.remove("hidden");
@@ -449,10 +481,8 @@ document.addEventListener("click", (e) => {
 inp.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
-    const city = e.target.value.trim();
-    if (!city) return;
+    citySearch();
     drop.classList.add("hidden");
-    createCityUrl(city);
     e.target.blur();
   }
 });
